@@ -1,9 +1,9 @@
 function X = Test(ImageFile)
 % Step 1: Read image Read in
-trainRGB = imread("normal3.JPG"); %Treshold Image
- figure,
- imshow(trainRGB),
- title('Original Image');
+trainRGB = imread("normal/normal3.JPG"); %Treshold Image
+%  figure,
+%  imshow(trainRGB),
+%  title('Original Image');
 
 ITrain = rgb2gray(trainRGB);
 seTrain = strel('disk',15)
@@ -55,8 +55,8 @@ finalBBTrain = floor(bboxesTrain(maxIndTrain,:));
 %// Crop the image
 outTrainBinaryimage = BW2Train(finalBBTrain(2):finalBBTrain(2)+finalBBTrain(4), finalBBTrain(1):finalBBTrain(1)+finalBBTrain(3));
 %// Show the images
-figure;
-imshow(outTrainBinaryimage);
+% figure;
+% imshow(outTrainBinaryimage);
 
 [theight, twidth, numberOfColorChannels] = size(outTrainBinaryimage)
 
@@ -73,9 +73,9 @@ trainycount = sum(outTrainBinaryimage, 2);
 
 % Step 1: Read image Read in
 RGBevaluate = imread(ImageFile); %Treshold Image
-figure,
-imshow(RGBevaluate),
-title('Original Image');
+% figure,
+% imshow(RGBevaluate),
+% title('Original Image');
 
 
 IEvaluate = rgb2gray(RGBevaluate);
@@ -137,6 +137,8 @@ outEvaluateBinaryimage = BW2evaluate(finalEvaluateBB(2):finalEvaluateBB(2)+final
 %// Show the images
 figure;
 imshow(outEvaluateBinaryimage);
+title(ImageFile);
+
 
 [height, width, numberOfColorChannels] = size(outEvaluateBinaryimage)
 
@@ -146,35 +148,50 @@ xcount = sum(outEvaluateBinaryimage, 1);
 yheight = 1:size(outEvaluateBinaryimage, 1);
 ycount = sum(outEvaluateBinaryimage, 2);
 
-fprintf("width : %i", height);
-fprintf("height : %i", width);
-fprintf("width/height : %f",height/width);
+fprintf("Image Name : %s  \n", ImageFile);
+fprintf("width : %i  \n", height);
+fprintf("height : %i \n", width);
+fprintf("width/height : %f \n",height/width);
 
 
-figure;
+% NORMAL - 0.697 <  W/H <  0.801
+% ROUND   -  0.801 <  W/H 
+% SHARPE -   W/H  <  0.697
 
-idxmin = find(xcount == max(xcount));
-idxmax = find(xcount == min(xcount));
-plot(xwidth,xcount,'-p','MarkerIndices',[idxmin idxmax],...
-    'MarkerFaceColor','red',...
-    'MarkerSize',15)
+a = height/width;
+if a >= 0.697 && a <= 0.801
+   fprintf("Result : NORMAL\n");
+   msgbox('NORMAL','Success');
+elseif a > 0.801
+    fprintf("Result : ROUND \n");
+    msgbox('ROUND','Success');
+else
+    fprintf("Result : SHARPE \n");
+    msgbox('SHARPE','Success');
+end
 
-xlabel('pixel position along x');
-ylabel('pixel count');
-title('Max value in horizontal histogram');
-fprintf("Max value : %i", idxmax);
-
-subplot(1, 2, 1);
-plot(xwidth, xcount, trainxwidth, trainxcount, '--');
-xlabel('pixel position along x');
-ylabel('pixel count');
-title('horizontal histogram');
-
-subplot(1, 2, 2);
-plot(yheight, ycount, trainyheight, trainycount,'--');
-xlabel('pixel position along y');
-ylabel('pixel count');
-title('vertical histogram');
+% figure;
+% idxmin = find(xcount == max(xcount));
+% idxmax = find(xcount == min(xcount));
+% plot(xwidth,xcount,'-p','MarkerIndices',[idxmin idxmax],...
+%     'MarkerFaceColor','red',...
+%     'MarkerSize',15)
+% 
+% xlabel('pixel position along x');
+% ylabel('pixel count');
+% title('Max value in horizontal histogram');
+% 
+% subplot(1, 2, 1);
+% plot(xwidth, xcount, trainxwidth, trainxcount, '--');
+% xlabel('pixel position along x');
+% ylabel('pixel count');
+% title('horizontal histogram');
+% 
+% subplot(1, 2, 2);
+% plot(yheight, ycount, trainyheight, trainycount,'--');
+% xlabel('pixel position along y');
+% ylabel('pixel count');
+% title('vertical histogram');
 
 return
 
